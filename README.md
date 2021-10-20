@@ -1,89 +1,35 @@
-# Poetry Template
+# Django Project Check
 
-Django app template, using `poetry-python` as dependency manager.
+This is a Django app that provides a mechanism for
 
-This project is a template that can be cloned and re-used for
-redistributable apps.
+## Background
 
-It includes the following:
+With a large codebase, and a high velocity team making edits, it can be
+difficult to keep track of how the codebase is changing over time. A
+classic issue is people creating new modules / classes in unexpected
+places, or ending up with a set of functions that should be in the same
+place but are spread across multiple locations (often resulting in
+`import` issues). In order to address this we build a small script to
+parse the codebase and dump out a complete listing of all modules,
+classes and functions. We commit this to the repo, and then run a CI
+check to ensure that it's up to date. The net result is that each PR has
+at least one file update which lists which functions have been edited,
+and where. It's like a live update to the index.
 
-* `poetry` for dependency management
-* `isort`, `black`, `pyupgrade` and `flake8` linting
-* `pre-commit` to run linting
-* `mypy` for type checking
-* `tox` and Github Actions for builds and CI
+This pattern - dump a text output and add a CI check to enforce its correctness - turns out to be a really useful pattern for keeping control of the codebase, and so we started adding new checks:
 
-There are default config files for the linting and mypy.
+- Python functions
+- Django URLs
+- GraphQL schema
+- FSM interactions
 
-## Principles
+The original function check is a python script (using `ast`) and has no requirement for the Django scaffolding, but the others do, and so they run as management commands, which are then wrapped with a `git diff` script:
 
-The motivation for this project is to provide a consistent set of
-standards across all YunoJuno public Python/Django projects. The
-principles we want to encourage are:
-
-* Simple for developers to get up-and-running
-* Consistent style (`black`, `isort`, `flake8`)
-* Future-proof (`pyupgrade`)
-* Full type hinting (`mypy`)
-
-## Versioning
-
-We currently support Python 3.7+, and Django 3.2+. We will aggressively
-upgrade Django versions, and we won't introduce hacks to support
-breaking changes - if Django 4 introduces something that 2.2 doesn't
-support we'll drop it.
-
-## Tests
-
-#### Tests package
-
-The package tests themselves are _outside_ of the main library code, in
-a package that is itself a Django app (it contains `models`, `settings`,
-and any other artifacts required to run the tests (e.g. `urls`).) Where
-appropriate, this test app may be runnable as a Django project - so that
-developers can spin up the test app and see what admin screens look
-like, test migrations, etc.
-
-#### Running tests
-
-The tests themselves use `pytest` as the test runner. If you have
-installed the `poetry` evironment, you can run them thus:
-
-```
-$ poetry run pytest
+```yaml
+- name: Run freeze_django_urls and check for any uncommitted diff
+  run: |
+    python manage.py freeze_django_urls
+    git diff --exit-code 'django_urls.txt'
 ```
 
-or
-
-```
-$ poetry shell
-(my_app) $ pytest
-```
-
-The full suite is controlled by `tox`, which contains a set of
-environments that will format, lint, and test against all
-support Python + Django version combinations.
-
-```
-$ tox
-...
-______________________ summary __________________________
-  fmt: commands succeeded
-  lint: commands succeeded
-  mypy: commands succeeded
-  py37-django22: commands succeeded
-  py37-django32: commands succeeded
-  py37-djangomain: commands succeeded
-  py38-django22: commands succeeded
-  py38-django32: commands succeeded
-  py38-djangomain: commands succeeded
-  py39-django22: commands succeeded
-  py39-django32: commands succeeded
-  py39-djangomain: commands succeeded
-```
-
-#### CI
-
-There is a `.github/workflows/tox.yml` file that can be used as a
-baseline to run all of the tests on Github. This file runs the oldest
-(2.2), newest (3.2), and head of the main Django branch.
+This project wraps this pattern into a base management command that can be subclassed for any such requirement. All you need to do is provide a function that returns the contents to be written to the file.
