@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "my-app"
+name = "django-project-checks"
 version = "0.1.0"
-description = "Project template for Django app, using Poetry."
+description = "Django management commands used to output useful project information."
 license = "MIT"
 authors = ["YunoJuno <code@yunojuno.com>"]
 maintainers = ["YunoJuno <code@yunojuno.com>"]
@@ -28,7 +28,7 @@ packages = [{ include = "my_app" }]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-django = "^2.2 || ^3.0"
+django = "^2.2 || ^3.0 || ^4.0"
 
 [tool.poetry.dev-dependencies]
 black = {version = "*", allow-prereleases = true}
