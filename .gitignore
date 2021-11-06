@@ -4,6 +4,7 @@
 .coverage
 .tox
 .venv
+.pytest_cache
 node_modules
 poetry.lock
 test.db

@@ -1,7 +1,0 @@
-/admin/auth/group/<path:object_id>/
-    name: ""
-    view: django.views.generic.base.RedirectView
-
-/admin/auth/user/<path:object_id>/
-    name: ""
-    view: django.views.generic.base.RedirectView

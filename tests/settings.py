@@ -61,11 +61,8 @@ LOGGING = {
     },
     "loggers": {
         "": {"handlers": ["console"], "propagate": True, "level": "DEBUG"},
-        # 'django': {
-        #     'handlers': ['console'],
-        #     'propagate': True,
-        #     'level': 'WARNING',
-        # },
+        "faker": {"level": "INFO"},
+        "factory": {"level": "INFO"},
     },
 }
 

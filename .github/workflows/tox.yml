@@ -32,6 +32,30 @@ jobs:
           pip install tox
           tox
 
+  check:
+    name: Run django checks
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.9]
+        django: [32]
+
+    env:
+      TOXENV: py${{ matrix.python }}-django${{ matrix.django }}
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Check frozen_django_urls
+        run: |
+          python manage.py freeze_django_urls --inputfile=urls.txt --outputfile=urls.txt --exit-code
+
   test:
     name: Run tests
     runs-on: ubuntu-latest
@@ -42,23 +66,6 @@ jobs:
 
     env:
       TOXENV: py${{ matrix.python }}-django${{ matrix.django }}
-
-    # services:
-    #   postgres:
-    #     image: postgres:12
-    #     env:
-    #       POSTGRES_USER: postgres
-    #       POSTGRES_PASSWORD: postgres
-    #       POSTGRES_DB: onfido
-    #       # Set health checks to wait until postgres has started
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
-    #     ports:
-    #       # Maps tcp port 5432 on service container to the host
-    #       - 5432:5432
 
     steps:
       - name: Check out the repository

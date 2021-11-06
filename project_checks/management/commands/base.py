@@ -2,16 +2,14 @@ from __future__ import annotations
 
 import difflib
 from argparse import ArgumentParser
+from typing import cast
 
 from black import sys
 from django.core.management.base import BaseCommand
 from git import CommandError
 
-# mypy hint for a text file
-Lines = list[str]
 
-
-def read_lines(inputfile: str) -> Lines | None:
+def read_lines(inputfile: str) -> list[str]:
     """Fetch the contents of the outputfile."""
     try:
         with open(inputfile, "r") as f:
@@ -20,14 +18,14 @@ def read_lines(inputfile: str) -> Lines | None:
         raise CommandError("Unable to read from 'inputfile' specified.") from ex
 
 
-def write_lines(outputfile: str, lines: Lines) -> None:
+def write_lines(outputfile: str, lines: list[str]) -> None:
     """Write the contents to the outputfile."""
     with open(outputfile, "w") as f:
         for line in lines:
             f.write(line + "\n")
 
 
-def diff_lines(old_lines: str, new_lines: str) -> Lines:
+def diff_lines(old_lines: list[str], new_lines: list[str]) -> list[str]:
     """Return list of all different lines as returned by difflib."""
     differ = difflib.Differ()
     diff = differ.compare(old_lines, new_lines)
@@ -68,33 +66,60 @@ class DiffCheckCommand(BaseCommand):
             default=False,
             help="Return non-zero exit code if a diff exists.",
         )
+        parser.add_argument(
+            "--show-contents",
+            action="store_true",
+            dest="show_contents",
+            default=False,
+            help="Print out the contents generated to stdout.",
+        )
 
-    def print_diff(self, diff: Lines) -> None:
+    def print_diff(self, diff: list[str]) -> None:
         """Dump the diff to stderr."""
         if diff:
+            self.stdout.write("--- Diff ---")
             self.stderr.writelines(diff)
         else:
             self.stdout.write("Empty diff - content is unchanged.")
+        self.stdout.write("")
+
+    def print_contents(self, contents: list[str]) -> None:
+        """Dump the contents to stdout."""
+        if contents:
+            self.stdout.write("--- Contents ---")
+            self.stdout.writelines(contents)
+        else:
+            self.stdout.write("No contents found.")
+        self.stdout.write("")
+
+    def print_header(self) -> None:
+        self.stdout.write("")
+        if self.inputfile:
+            self.stdout.write(f"Reading contents from: {self.inputfile}")
+        if self.inputfile:
+            self.stdout.write(f"Writing contents to:   {self.inputfile}")
+        self.stdout.write("")
 
     def handle(self, *args: object, **options: object) -> None:
-        inputfile = options.pop("inputfile", None)
-        outputfile = options.pop("outputfile", None)
-        exit_code = options.pop("exit_code")
-        new_lines = self.do_command(**options)
-        self.stdout.writelines(new_lines)
-        diff: Lines = []
-        # if we have an inputfile, then run a diff comparison
-        if inputfile:
-            old_lines = read_lines(inputfile)
-            diff = diff_lines(old_lines, new_lines)
-            self.print_diff(diff)
+        self.inputfile = cast(str, options.pop("inputfile", None))
+        self.outputfile = cast(str, options.pop("outputfile", None))
+        self.exit_code = options.pop("exit_code")
+        self.print_header()
+        new_lines = self.get_content(*args, **options)
         # if we have an outputfile, then dump the contents
-        if outputfile:
-            write_lines(outputfile, new_lines)
-        # if we use --check then exit with a non-zero code if diff exists
-        if exit_code:
-            sys.exit(len(diff))
+        if self.outputfile:
+            write_lines(self.outputfile, new_lines)
+        if options["show_contents"]:
+            self.print_contents(new_lines)
+        # if we have an inputfile, then run a diff comparison
+        if self.inputfile:
+            diff = diff_lines(read_lines(self.inputfile), new_lines)
+            # always print the diff
+            self.print_diff(diff)
+            # if we use --check then exit with a non-zero code if diff exists
+            if self.exit_code and diff:
+                sys.exit(1)
 
-    def do_command(self, *args: object, **options: object) -> Lines:
+    def get_content(self, *args: object, **options: object) -> list[str]:
         """Override in commands to generate the content you want to check."""
         raise NotImplementedError
