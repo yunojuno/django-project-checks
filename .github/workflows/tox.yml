@@ -54,7 +54,7 @@ jobs:
 
       - name: Check frozen_django_urls
         run: |
-          python manage.py freeze_django_urls --inputfile=urls.txt --outputfile=urls.txt --exit-code
+          python manage.py freeze_django_urls --inputfile=urls.txt --exit-code
 
   test:
     name: Run tests
