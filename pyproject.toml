@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-project-checks"
-version = "0.1.0"
+version = "0.1.0-alpha1"
 description = "Django management commands used to output useful project information."
 license = "MIT"
 authors = ["YunoJuno <code@yunojuno.com>"]
