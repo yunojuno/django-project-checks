@@ -7,4 +7,5 @@
 .pytest_cache
 node_modules
 poetry.lock
+temp.txt
 test.db

@@ -41,20 +41,21 @@ jobs:
         django: [32]
 
     env:
-      TOXENV: py${{ matrix.python }}-django${{ matrix.django }}
+      TOXENV: checks
 
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
 
-      - name: Set up Python ${{ matrix.python }}
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: ${{ matrix.python }}
+          python-version: 3.9
 
-      - name: Run Django checks
+      - name: Install and run tox
         run: |
-          python manage.py freeze_django_urls --inputfile=urls.txt --exit-code
+          pip install tox
+          tox
 
   test:
     name: Run tests
