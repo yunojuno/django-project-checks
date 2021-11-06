@@ -59,11 +59,11 @@ class DiffCheckCommand(BaseCommand):
             help="Output destination filename.",
         )
         parser.add_argument(
-            "--exit-code",
+            "--check",
             action="store_true",
-            dest="exit_code",
+            dest="check_changes",
             default=False,
-            help="Return non-zero exit code if a diff exists.",
+            help="Exit with a non-zero status if a diff exists (use for CI).",
         )
         parser.add_argument(
             "--show-contents",
@@ -102,7 +102,7 @@ class DiffCheckCommand(BaseCommand):
     def handle(self, *args: object, **options: object) -> None:
         self.inputfile = cast(str, options.pop("inputfile", None))
         self.outputfile = cast(str, options.pop("outputfile", None))
-        self.exit_code = options.pop("exit_code")
+        self.check_changes = options.pop("check_changes")
         self.print_header()
         new_lines = self.get_content(*args, **options)
         # if we have an outputfile, then dump the contents
@@ -116,7 +116,7 @@ class DiffCheckCommand(BaseCommand):
             # always print the diff
             self.print_diff(diff)
             # if we use --check then exit with a non-zero code if diff exists
-            if self.exit_code and diff:
+            if self.check_changes and diff:
                 sys.exit(1)
 
     def get_content(self, *args: object, **options: object) -> list[str]:
