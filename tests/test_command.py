@@ -34,7 +34,7 @@ class TestDiffCheckCommand:
     def test_outputfile(self, filename: str) -> None:
         # print contents out to stdout - no diff
         call_command("count_lines", lines=3, outputfile=filename)
-        with open("foo.txt", "r") as f:
+        with open(filename, "r") as f:
             assert f.readlines() == ["line 1\n", "line 2\n", "line 3\n"]
 
     def test_inputfile__no_diff(self, filename: str, stdout: StringIO) -> None:

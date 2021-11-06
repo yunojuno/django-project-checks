@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import difflib
+import sys
 from argparse import ArgumentParser
 from typing import cast
 
-from black import sys
-from django.core.management.base import BaseCommand
-from git import CommandError
+from django.core.management.base import BaseCommand, CommandError
 
 
 def read_lines(inputfile: str) -> list[str]:

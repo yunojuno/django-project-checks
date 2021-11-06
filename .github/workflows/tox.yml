@@ -52,7 +52,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Check frozen_django_urls
+      - name: Run Django checks
         run: |
           python manage.py freeze_django_urls --inputfile=urls.txt --exit-code
 

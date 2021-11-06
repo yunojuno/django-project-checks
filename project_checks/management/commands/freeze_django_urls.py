@@ -105,7 +105,7 @@ class Command(DiffCheckCommand):
                     "module": func_name,
                 },
             )
-            views.append(txt)
+            views += txt.split("\n")
         self.stdout.write("---")
         self.stdout.write(f"Collected {len(views)} urls")
         return views
