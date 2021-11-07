@@ -1,6 +1,6 @@
-# Django Project Check
+# Django Project Check
 
-This is a Django app that provides a mechanism for
+Django management command for monitoring file diffs.
 
 ## Background
 
