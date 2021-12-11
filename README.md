@@ -16,14 +16,19 @@ check to ensure that it's up to date. The net result is that each PR has
 at least one file update which lists which functions have been edited,
 and where. It's like a live update to the index.
 
-This pattern - dump a text output and add a CI check to enforce its correctness - turns out to be a really useful pattern for keeping control of the codebase, and so we started adding new checks:
+This pattern - dump a text output and add a CI check to enforce its
+correctness - turns out to be a really useful pattern for keeping
+control of the codebase, and so we started adding new checks:
 
 - Python functions
 - Django URLs
 - GraphQL schema
 - FSM interactions
 
-The original function check is a python script (using `ast`) and has no requirement for the Django scaffolding, but the others do, and so they run as management commands, which are then wrapped with a `git diff` script:
+The original function check is a python script (using `ast`) and has no
+requirement for the Django scaffolding, but the others do, and so they
+run as management commands, which are then wrapped with a `git diff`
+script:
 
 ```yaml
 - name: Run freeze_django_urls and check for any uncommitted diff
@@ -32,4 +37,6 @@ The original function check is a python script (using `ast`) and has no requirem
     git diff --exit-code 'django_urls.txt'
 ```
 
-This project wraps this pattern into a base management command that can be subclassed for any such requirement. All you need to do is provide a function that returns the contents to be written to the file.
+This project wraps this pattern into a base management command that can
+be subclassed for any such requirement. All you need to do is provide a
+function that returns the contents to be written to the file.
