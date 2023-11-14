@@ -42,7 +42,7 @@ class DiffCheckCommand(BaseCommand):
         the --check-only option and it will return a non-zero exit code
         if the output has changed.
 
-        """
+        """  # noqa: A003
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         super().add_arguments(parser)

@@ -1,0 +1,12 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## v0.3
+
+* Add Django 5.0 to build matrix
+* Add Python 3.12 to build matrix
+* Drop Python 3.7 from build matrix
+* Drop Django <3.2 from build matrix
+
+No code changes.
