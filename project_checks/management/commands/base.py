@@ -86,7 +86,8 @@ class DiffCheckCommand(BaseCommand):
         """Dump the contents to stdout."""
         if contents:
             self.stdout.write("--- Contents ---")
-            self.stdout.writelines(contents)
+            for line in contents:
+                self.stdout.write(line + "\n")
         else:
             self.stdout.write("No contents found.")
         self.stdout.write("")

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.4
+
+* Add Django 5.2 to build matrix
+* Drop support for Django versions before 4.2
+* Update ruff commands to use modern "ruff check" syntax
+* Update GitHub Actions to only test Django main branch with Python 3.12
+
 ## v0.3
 
 * Add Django 5.0 to build matrix
