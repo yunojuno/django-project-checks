@@ -9,3 +9,5 @@ node_modules
 poetry.lock
 temp.txt
 test.db
+/dist/django_project_checks-0.4.tar.gz
+/dist/django_project_checks-0.4-py3-none-any.whl
