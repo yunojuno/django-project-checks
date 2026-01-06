@@ -4,9 +4,7 @@ Django management command for monitoring file diffs.
 
 ## Compatibility
 
-Supports:
-- Django 4.2, 5.0, 5.2
-- Python 3.8 to 3.12 (depending on Django version)
+Supports Python 3.12+ and Django 5.2-6.0
 
 ## Background
 
